@@ -2,7 +2,7 @@
 
 from django.shortcuts import render, redirect
 # from django.contrib.auth.forms import UserCreationForm
-from .models import Message
+from .models import Message, DiaryEntry
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from .forms import CapsuleForm,CustomUserCreationForm
@@ -13,6 +13,17 @@ from .forms import CapsuleForm,CustomUserCreationForm
 #         form.save()
 #         return redirect('login')
 #     return render(request, 'core/register.html', {'form': form})
+
+
+def diary(request):
+    if request.method == "POST":
+        content = request.POST.get("content")
+        if content:
+            DiaryEntry.objects.create(content=content, created_at=timezone.now())
+        return redirect('/diary')
+
+    entries = DiaryEntry.objects.all().order_by('-created_at')
+    return render(request, 'core/diary.html', {'entries': entries})
 
 def register(request):
     form = CustomUserCreationForm(request.POST or None)
