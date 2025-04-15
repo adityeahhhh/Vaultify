@@ -11,6 +11,7 @@
       
       <div class="form-fields">
         {% for field in form %}
+          {% if field.name != "latitude" and field.name != "longitude" %}
           <div class="form-group">
             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
             {{ field }}
@@ -25,13 +26,19 @@
               </div>
             {% endif %}
           </div>
+          {% endif %}
         {% endfor %}
+        <div class="form-group">
+          <label for="id_latitude">Latitude</label>
+          <input type="number" step="any" id="id_latitude" name="latitude" value="{{ form.latitude.value|default_if_none:'' }}">
+        </div>
+        <div class="form-group">
+          <label for="id_longitude">Longitude</label>
+          <input type="number" step="any" id="id_longitude" name="longitude" value="{{ form.longitude.value|default_if_none:'' }}">
+        </div>
         <div class="form-group">
           <label for="map">Pick a location (optional):</label>
           <div id="map" style="height: 300px; border-radius: 8px; margin-bottom: 10px;"></div>
-          <!-- Hidden fields for latitude and longitude   >
-          <input type="hidden" id="id_latitude" name="latitude" value="{{ form.latitude.value|default_if_none:'' }}">
-          <input type="hidden" id="id_longitude" name="longitude" value="{{ form.longitude.value|default_if_none:'' }}"-->
         </div>
       </div>
       
@@ -50,7 +57,6 @@
     margin: 0 auto;
     padding: 20px;
   }
-  
   .form-header {
     margin-bottom: 30px;
     border-bottom: 2px solid #000000;
@@ -59,48 +65,40 @@
     justify-content: space-between;
     align-items: center;
   }
-  
   .form-header h2 {
     font-size: 28px;
     color: #000000 !important;
     margin: 0;
     font-weight: 600;
   }
-  
   .form-card {
     border-radius: 12px;
-    /* background: radial-gradient(circle at center, #333, #191919) !important; */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     overflow: hidden;
     background: rgb(255, 255, 255);
     border: 1px solid #eaeaea;
     padding: 30px;
   }
-  
   .capsule-form {
     display: flex;
     flex-direction: column;
     gap: 20px;
   }
-  
   .form-fields {
     display: flex;
     flex-direction: column;
     gap: 20px;
   }
-  
   .form-group {
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
-  
   .form-group label {
     font-weight: 600;
     color: #333;
     font-size: 16px;
   }
-  
   .form-group input,
   .form-group textarea,
   .form-group select {
@@ -110,7 +108,6 @@
     font-size: 16px;
     transition: border-color 0.3s, box-shadow 0.3s;
   }
-  
   .form-group input:focus,
   .form-group textarea:focus,
   .form-group select:focus {
@@ -118,34 +115,28 @@
     box-shadow: 0 0 0 2px rgba(207, 154, 62, 0.2);
     outline: none;
   }
-  
   .form-group textarea {
     min-height: 120px;
     resize: vertical;
   }
-  
   .field-help {
     font-size: 14px;
     color: #666;
     margin-top: 4px;
   }
-  
   .field-errors {
     margin-top: 8px;
   }
-  
   .error-message {
     color: #d32f2f;
     font-size: 14px;
     margin: 0;
   }
-  
   .form-actions {
     display: flex;
     justify-content: flex-end;
     margin-top: 10px;
   }
-  
   .submit-button {
     display: inline-flex;
     align-items: center;
@@ -160,64 +151,51 @@
     cursor: pointer;
     transition: all 0.2s;
   }
-  
   .submit-button:hover {
     background: #575757;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(32, 26, 6, 0.25);
   }
-  
-  /* File input styling */
   input[type="file"] {
     padding: 10px;
     background-color: #f8f9fa;
   }
-  
-  /* Date/time input styling */
   input[type="date"],
   input[type="time"],
   input[type="datetime-local"] {
     font-family: Arial, sans-serif;
   }
-  
-  /* Checkbox styling */
   input[type="checkbox"] {
     width: 20px;
     height: 20px;
     margin-right: 8px;
   }
-  
-  /* For checkbox containers */
   .checkbox-container {
     display: flex;
     align-items: center;
   }
-  
-  /* Media queries */
   @media (max-width: 768px) {
     .form-card {
       padding: 20px;
     }
-    
     .form-header h2 {
       font-size: 24px;
     }
-    
     .submit-button {
       width: 100%;
       justify-content: center;
     }
   }
 </style>
-<!-- Leaflet CSS and JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // Default center (India), or use previous value if editing
-    var lat = parseFloat(document.getElementById('id_latitude').value) || 20.5937;
-    var lng = parseFloat(document.getElementById('id_longitude').value) || 78.9629;
+    var latInput = document.getElementById('id_latitude');
+    var lngInput = document.getElementById('id_longitude');
+    var lat = parseFloat(latInput.value) || 20.5937;
+    var lng = parseFloat(lngInput.value) || 78.9629;
     var map = L.map('map').setView([lat, lng], 5);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -225,23 +203,29 @@ document.addEventListener("DOMContentLoaded", function() {
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    var marker = null;
-    // If editing and lat/lng exist, show marker
-    if (!isNaN(lat) && !isNaN(lng) && (lat !== 20.5937 || lng !== 78.9629)) {
-        marker = L.marker([lat, lng]).addTo(map);
-    }
+    var marker = L.marker([lat, lng]).addTo(map);
 
+    // Update marker and map when user clicks on map
     map.on('click', function(e) {
         var latitude = e.latlng.lat.toFixed(6);
         var longitude = e.latlng.lng.toFixed(6);
-        document.getElementById('id_latitude').value = latitude;
-        document.getElementById('id_longitude').value = longitude;
-
-        if (marker) {
-            map.removeLayer(marker);
-        }
-        marker = L.marker([latitude, longitude]).addTo(map);
+        latInput.value = latitude;
+        lngInput.value = longitude;
+        marker.setLatLng([latitude, longitude]);
+        map.setView([latitude, longitude]);
     });
+
+    // Update marker and map when user types in latitude/longitude
+    function updateMapFromInputs() {
+        var newLat = parseFloat(latInput.value);
+        var newLng = parseFloat(lngInput.value);
+        if (!isNaN(newLat) && !isNaN(newLng)) {
+            marker.setLatLng([newLat, newLng]);
+            map.setView([newLat, newLng]);
+        }
+    }
+    latInput.addEventListener('input', updateMapFromInputs);
+    lngInput.addEventListener('input', updateMapFromInputs);
 });
 </script>
 {% endblock %}
