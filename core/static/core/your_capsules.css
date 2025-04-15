@@ -148,6 +148,15 @@ transition: all 0.2s;
 font-weight: 500;
 }
 
+.message-map {
+    width: 300px;           /* or any fixed width you want */
+    height: 120px;          /* reduce height as needed */
+    border-radius: 8px;
+    margin: 0 auto 30px;    /* top: 0, right/left: auto, bottom: 10px */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: block;         /* ensures margin auto works */
+  }
+
 .download-button:hover {
 background: #575757;
 text-decoration: none;

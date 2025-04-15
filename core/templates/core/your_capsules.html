@@ -61,7 +61,20 @@
               <div class="popup-content">
                 <p>{{ msg.content }}</p>
               </div>
+              {% if msg.latitude and msg.longitude %}
+            <div class="message-location">
+              <div id="map-{{ msg.id }}" class="message-map" style="height: 180px; border-radius: 8px; margin-bottom: 10px;"></div>
+              <script>
+                window.mapsToInit = window.mapsToInit || [];
+                window.mapsToInit.push({
+                  id: "map-{{ msg.id }}",
+                  lat: {{ msg.latitude }},
+                  lng: {{ msg.longitude }}
+                });
+              </script>
               
+            </div>
+          {% endif %}
               {% if msg.image %}
               <div class="popup-media">
                 <img src="{{ msg.image.url }}" alt="Message Image" class="message-image">
