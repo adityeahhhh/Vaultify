@@ -13,4 +13,6 @@ urlpatterns = [
     path('public/', views.public_messages, name='public'),
     path('your_capsules/', views.your_capsules, name='your_capsules'),
     path('profile/', views.profile, name='profile'),
+    path('public_map/', views.public_map, name='public_map'),
+
 ]

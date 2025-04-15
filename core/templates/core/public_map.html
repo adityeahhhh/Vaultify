@@ -1,0 +1,72 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<style>
+  /* Adjust this value to match your actual navbar height */
+  :root {
+    --navbar-height: 70px;
+  }
+  #bigmap {
+    width: 100%;
+    height: calc(100vh - var(--navbar-height));
+    margin: 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    /* Add top margin to push map below navbar */
+    margin-top: var(--navbar-height);
+    z-index: 1;
+  }
+  body, html {
+    overflow-x: hidden;
+  }
+  .messages-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  .messages-header {
+    margin-bottom: 30px;
+    border-bottom: 2px solid #000000;
+    padding-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .messages-header h2 {
+    font-size: 28px;
+    color: #000000 !important;
+    margin: 0;
+    font-weight: 600;
+  }
+</style><div class="messages-container"><div class="messages-header">
+    <h2 class="main-heading">All Public Capsules on the Map</h2>
+  </div>  
+<div id="bigmap"></div></div>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var map = L.map('bigmap').setView([20.5937, 78.9629], 5); // Centered on India
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // Add all public messages as pins
+    {% for msg in messages %}
+      {% if msg.latitude and msg.longitude %}
+        var marker = L.marker([{{ msg.latitude }}, {{ msg.longitude }}]).addTo(map);
+        marker.bindPopup(
+          `<b>{{ msg.heading|escapejs }}</b><br>
+           <i class="fas fa-user"></i> {{ msg.user.username|escapejs }}<br>
+           <span style="color:#666;">{{ msg.content|truncatechars:100|escapejs }}</span>`
+        );
+        marker.on('mouseover', function(e) { this.openPopup(); });
+        marker.on('mouseout', function(e) { this.closePopup(); });
+      {% endif %}
+    {% endfor %}
+});
+</script>
+{% endblock %}
+

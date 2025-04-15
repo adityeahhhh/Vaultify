@@ -24,6 +24,19 @@ def register(request):
 def main_page(request):
     return render(request, 'core/main.html')
 
+from django.utils import timezone
+from .models import Message
+
+def public_map(request):
+    messages = Message.objects.filter(
+        visibility='public',
+        unlock_datetime__lte=timezone.now(),
+        latitude__isnull=False,
+        longitude__isnull=False
+    )
+    return render(request, 'core/public_map.html', {'messages': messages})
+
+
 @login_required
 def create_capsule(request):
     form = CapsuleForm(request.POST or None, request.FILES or None)

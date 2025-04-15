@@ -34,6 +34,7 @@
         <a href="{% url 'public' %}" {% if request.resolver_match.url_name == 'public' %}class="active"{% endif %}>Public</a>
         <a href="{% url 'your_capsules' %}" {% if request.resolver_match.url_name == 'your_capsules' %}class="active"{% endif %}>Your Capsules</a>
         <a href="{% url 'profile' %}" {% if request.resolver_match.url_name == 'profile' %}class="active"{% endif %}>Profile</a>
+        <a href="{% url 'public_map' %}" {% if request.resolver_match.url_name == 'public_map' %}class="active"{% endif %}>Capsules Around The World</a>
 
         <!-- Logout Form -->
         <form method="POST" action="{% url 'logout' %}" style="display:inline;">
