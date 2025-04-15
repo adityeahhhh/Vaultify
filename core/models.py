@@ -32,3 +32,9 @@ class Message(models.Model):
 
     def __str__(self):
         return self.heading
+
+class DiaryEntry(models.Model):
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
