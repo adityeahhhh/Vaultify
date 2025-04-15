@@ -25,7 +25,10 @@
               <h3>{{ msg.heading }}</h3>
               <div class="message-meta">
                 <span class="author"><i class="fas fa-user"></i> {{ msg.user.username }}</span>
-                <span class="date"><i class="far fa-calendar-alt"></i> {{ msg.unlock_datetime|date:"Y-m-d H:i" }}</span>
+                <div class="time-info">
+                  <span class="date"><i class="far fa-calendar-plus"></i> Created: {{ msg.created_at|date:"Y-m-d H:i" }}</span>
+                  <span class="date"><i class="far fa-calendar-alt"></i> Unlocked: {{ msg.unlock_datetime|date:"Y-m-d H:i" }}</span>
+                </div>
               </div>
             </div>
             
@@ -45,7 +48,10 @@
                 <h3>{{ msg.heading }}</h3>
                 <div class="message-meta">
                   <span class="author"><i class="fas fa-user"></i> {{ msg.user.username }}</span>
-                  <span class="date"><i class="far fa-calendar-alt"></i> {{ msg.unlock_datetime|date:"Y-m-d H:i" }}</span>
+                  <div class="time-info">
+                    <span class="date"><i class="far fa-calendar-plus"></i> Created: {{ msg.created_at|date:"Y-m-d H:i" }}</span>
+                    <span class="date"><i class="far fa-calendar-alt"></i> Unlocks: {{ msg.unlock_datetime|date:"Y-m-d H:i" }}</span>
+                  </div>
                 </div>
                 <div class="unlock-status unlocked">
                   <i class="fas fa-unlock-alt"></i> Unlocked
@@ -101,7 +107,10 @@
             <h3>{{ msg.heading }}</h3>
             <div class="message-meta">
               <span class="author"><i class="fas fa-user"></i> {{ msg.user.username }}</span>
-              <span class="date"><i class="far fa-calendar-alt"></i> {{ msg.unlock_datetime|date:"Y-m-d H:i" }}</span>
+              <div class="time-info">
+                <span class="date"><i class="far fa-calendar-plus"></i> Created: {{ msg.created_at|date:"Y-m-d H:i" }}</span>
+                <span class="date"><i class="far fa-calendar-alt"></i> Unlocks: {{ msg.unlock_datetime|date:"Y-m-d H:i" }}</span>
+              </div>
             </div>
           </div>
           
@@ -219,18 +228,32 @@
     justify-content: space-between;
     font-size: 14px;
     color: #666;
+    align-items: flex-start;
   }
   
-  .message-meta .author, 
-  .message-meta .date {
+  .message-meta .author {
     display: flex;
     align-items: center;
     gap: 5px;
   }
-
+  
+  .time-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+  }
+  
+  .time-info .date {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: flex-end;
+  }
+  
   .countdown {
-  font-weight: 800;
-  color: #ac6f06;/
+    font-weight: 800;
+    color: #ac6f06;
   }
   
   .countdown-container {
