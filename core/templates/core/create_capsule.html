@@ -26,6 +26,13 @@
             {% endif %}
           </div>
         {% endfor %}
+        <div class="form-group">
+          <label for="map">Pick a location (optional):</label>
+          <div id="map" style="height: 300px; border-radius: 8px; margin-bottom: 10px;"></div>
+          <!-- Hidden fields for latitude and longitude   >
+          <input type="hidden" id="id_latitude" name="latitude" value="{{ form.latitude.value|default_if_none:'' }}">
+          <input type="hidden" id="id_longitude" name="longitude" value="{{ form.longitude.value|default_if_none:'' }}"-->
+        </div>
       </div>
       
       <div class="form-actions">
@@ -202,4 +209,39 @@
     }
   }
 </style>
+<!-- Leaflet CSS and JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Default center (India), or use previous value if editing
+    var lat = parseFloat(document.getElementById('id_latitude').value) || 20.5937;
+    var lng = parseFloat(document.getElementById('id_longitude').value) || 78.9629;
+    var map = L.map('map').setView([lat, lng], 5);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    var marker = null;
+    // If editing and lat/lng exist, show marker
+    if (!isNaN(lat) && !isNaN(lng) && (lat !== 20.5937 || lng !== 78.9629)) {
+        marker = L.marker([lat, lng]).addTo(map);
+    }
+
+    map.on('click', function(e) {
+        var latitude = e.latlng.lat.toFixed(6);
+        var longitude = e.latlng.lng.toFixed(6);
+        document.getElementById('id_latitude').value = latitude;
+        document.getElementById('id_longitude').value = longitude;
+
+        if (marker) {
+            map.removeLayer(marker);
+        }
+        marker = L.marker([latitude, longitude]).addTo(map);
+    });
+});
+</script>
 {% endblock %}

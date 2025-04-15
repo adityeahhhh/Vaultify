@@ -47,6 +47,20 @@
             <div class="popup-content">
               <p>{{ msg.content }}</p>
             </div>
+            {% if msg.latitude and msg.longitude %}
+            <div class="message-location">
+              <div id="map-{{ msg.id }}" class="message-map" style="height: 180px; border-radius: 8px; margin-bottom: 10px;"></div>
+              <script>
+                window.mapsToInit = window.mapsToInit || [];
+                window.mapsToInit.push({
+                  id: "map-{{ msg.id }}",
+                  lat: {{ msg.latitude }},
+                  lng: {{ msg.longitude }}
+                });
+              </script>
+              
+            </div>
+          {% endif %}
             
             {% if msg.image %}
             <div class="popup-media">
@@ -138,6 +152,15 @@
     font-weight: 600;
   }
   
+  .message-map {
+  width: 300px;           /* or any fixed width you want */
+  height: 120px;          /* reduce height as needed */
+  border-radius: 8px;
+  margin: 0 auto 30px;    /* top: 0, right/left: auto, bottom: 10px */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  display: block;         /* ensures margin auto works */
+}
+
   .message-meta {
     display: flex;
     justify-content: space-between;
@@ -418,6 +441,20 @@
           document.body.style.overflow = 'auto';
         }
       }
+    }
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    if (window.mapsToInit) {
+      window.mapsToInit.forEach(function(mapData) {
+        var map = L.map(mapData.id, {scrollWheelZoom: false, dragging: false, zoomControl: true}).setView([mapData.lat, mapData.lng], 4);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '© OpenStreetMap'
+        }).addTo(map);
+        L.marker([mapData.lat, mapData.lng]).addTo(map);
+      });
     }
   });
 </script>

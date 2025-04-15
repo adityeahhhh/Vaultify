@@ -639,4 +639,18 @@
     setInterval(updateCountdowns, 1000);
   });
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    if (window.mapsToInit) {
+      window.mapsToInit.forEach(function(mapData) {
+        var map = L.map(mapData.id, {scrollWheelZoom: false, dragging: false, zoomControl: true}).setView([mapData.lat, mapData.lng], 4);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '© OpenStreetMap'
+        }).addTo(map);
+        L.marker([mapData.lat, mapData.lng]).addTo(map);
+      });
+    }
+  });
+</script>
 {% endblock %}

@@ -13,7 +13,10 @@ class Message(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     unlock_datetime = models.DateTimeField()
     visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES, default='private')
-    
+    #For Geotagging
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+
     # optional media
     file = models.FileField(upload_to='files/', blank=True, null=True)
     image = models.ImageField(upload_to='images/', blank=True, null=True)

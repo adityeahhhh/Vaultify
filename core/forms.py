@@ -7,9 +7,16 @@ from django.contrib.auth.models import User
 class CapsuleForm(forms.ModelForm):
     class Meta:
         model = Message
-        fields = ['heading', 'content', 'unlock_datetime', 'visibility', 'file', 'image', 'video']
+        fields = [
+            'heading', 'content', 'unlock_datetime', 'visibility',
+            'file', 'image', 'video',
+            'latitude', 'longitude',  # <-- Add these fields
+        ]
         widgets = {
             'unlock_datetime': DateTimeInput(attrs={'type': 'datetime-local'}),
+            # Optionally, you can hide these fields if you use a map picker in your template
+            'latitude': forms.HiddenInput(),
+            'longitude': forms.HiddenInput(),
         }
 
 
