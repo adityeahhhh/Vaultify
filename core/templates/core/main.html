@@ -1,5 +1,418 @@
 {% extends 'core/base.html' %}
 {% block content %}
-  <h2>Welcome to Time Capsule</h2>
-  <p>Lock your thoughts, release them in time.</p>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<div class="hero-container">
+  <div class="hero-header">
+    <div class="main-heading">Time Capsule</div>
+  </div>
+  
+  <div class="hero-content" style="background-image: url('https://www.worldatlas.com/r/w1200/upload/9e/19/cb/shutterstock-717888439.jpg'); background-size: cover; background-position: center; position: relative; color: white;">
+    <!-- Add an overlay to ensure text is readable over the image -->
+    <div class="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); border-radius: 12px;"></div>
+    
+    <!-- Content positioned above the overlay -->
+    <div style="position: relative; z-index: 1;">
+      <br><br><br><br><br><br><br><br><br>
+      <p class="tagline" style="color: white;">Preserve today's moments for tomorrow's memories</p>
+      <div class="hero-buttons">
+        <a href="{% url 'create' %}" class="action-btn">
+          <i class="fas fa-plus"></i> Create a Capsule
+        </a>
+        <a href="{% url 'public' %}" class="action-btn action-btn-outline" style="color: white; border-color: white;">
+          <i class="fas fa-globe"></i> Discover Public Capsules
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="features-container">
+  <div class="features-header">
+    <div class="main-heading">How It Works</div>
+  </div>
+  
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-edit"></i>
+      </div>
+      <h3>Create</h3>
+      <p>Write messages, upload photos, videos, or important files to preserve for the future.</p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-lock"></i>
+      </div>
+      <h3>Lock</h3>
+      <p>Set a future date when your time capsule will be unlocked and available to view.</p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-share-alt"></i>
+      </div>
+      <h3>Share</h3>
+      <p>Choose to keep your capsule private or make it public for others to discover later.</p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-star"></i>
+      </div>
+      <h3>Rediscover</h3>
+      <p>Experience the joy of rediscovering memories when your capsule unlocks.</p>
+    </div>
+  </div>
+</div>
+
+<div class="testimonials-container">
+  <div class="testimonials-header">
+    <div class="main-heading">What Our Users Say</div>
+  </div>
+  
+  <div class="testimonial-grid">
+    <div class="testimonial-card">
+      <div class="testimonial-content">
+        <p>"I sent a message to my future self about my goals and dreams. Opening it 5 years later was an incredible experience!"</p>
+      </div>
+      <div class="testimonial-footer">
+        <span class="testimonial-author"><i class="fas fa-user"></i>Aashna</span>
+      </div>
+    </div>
+    
+    <div class="testimonial-card">
+      <div class="testimonial-content">
+        <p>"Created a time capsule for my newborn daughter to open on her 18th birthday. The perfect digital legacy."</p>
+      </div>
+      <div class="testimonial-footer">
+        <span class="testimonial-author"><i class="fas fa-user"></i> Rhea</span>
+      </div>
+    </div>
+    
+    <div class="testimonial-card">
+      <div class="testimonial-content">
+        <p>"Our team used Time Capsule for our startup's 1-year anniversary predictions. Reading them at our 5-year milestone was both hilarious and inspiring."</p>
+      </div>
+      <div class="testimonial-footer">
+        <span class="testimonial-author"><i class="fas fa-user"></i>Squadify</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cta-container">
+  <div class="cta-content">
+    <div><strong>Start Your Journey Through Time</strong></div>
+    <p>Create your first time capsule today and send a message to your future self or loved ones.</p>
+    <a href="{% url 'create' %}" class="action-btn">
+      <i class="fas fa-clock"></i> Get Started
+    </a>
+  </div>
+</div>
+
+<style>
+  .main-heading {
+    font-size: 28px;
+    color: #000000 !important;
+    margin: 0;
+    font-weight: 600;
+  }
+  
+  .hero-container {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 20px;
+  }
+  
+  .hero-header {
+    margin-bottom: 30px;
+    border-bottom: 2px solid #000000;
+    padding-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .hero-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    padding: 30px;
+    border: 1px solid #eaeaea;
+    text-align: center;
+  }
+  
+  .tagline {
+    font-size: 20px;
+    color: #666;
+    margin-bottom: 25px;
+  }
+  
+  .hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #8c5a03;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  
+  .action-btn:hover {
+    background: #b27204;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    color: white;
+    text-decoration: none;
+  }
+  
+  .action-btn-outline {
+    background: transparent;
+    border: 2px solid #8c5a03;
+    color: #8c5a03;
+  }
+  
+  .action-btn-outline:hover {
+    background: rgba(140, 90, 3, 0.1);
+    color: #8c5a03;
+  }
+  
+  /* Features Section */
+  .features-container {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 20px;
+  }
+  
+  .features-header {
+    margin-bottom: 30px;
+    border-bottom: 2px solid #000000;
+    padding-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+  }
+  
+  .feature-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    padding: 25px 20px;
+    background: white;
+    border: 1px solid #eaeaea;
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-align: center;
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  .feature-icon {
+    font-size: 40px;
+    color: #8c5a03;
+    margin-bottom: 15px;
+  }
+  
+  .feature-card h3 {
+    margin: 0 0 15px 0;
+    font-size: 20px;
+    color: #333 !important;
+    font-weight: 600;
+  }
+  
+  .feature-card p {
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+  }
+  
+  /* Testimonials Section */
+  .testimonials-container {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 20px;
+  }
+  
+  .testimonials-header {
+    margin-bottom: 30px;
+    border-bottom: 2px solid #000000;
+    padding-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .testimonial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+  }
+  
+  .testimonial-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    background: white;
+    border: 1px solid #eaeaea;
+  }
+  
+  .testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  .testimonial-content {
+    padding: 20px;
+    background: linear-gradient(to right, #f8f9fa, #f2f2f2);
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .testimonial-content p {
+    margin: 0;
+    font-style: italic;
+    line-height: 1.7;
+    color: #444;
+  }
+  
+  .testimonial-footer {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #8c5a03;
+    font-weight: 600;
+  }
+  
+  /* CTA Section */
+  .cta-container {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 20px;
+  }
+  
+  .cta-content {
+    border-radius: 12px;
+    background: linear-gradient(to right, #8c5a03, #b27204);
+    color: white;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(140, 90, 3, 0.25);
+  }
+  
+  .cta-content h2 {
+    font-size: 28px;
+    margin: 0 0 15px 0;
+    font-weight: 600;
+  }
+  
+  .cta-content p {
+    font-size: 18px;
+    margin-bottom: 25px;
+    opacity: 0.9;
+  }
+  
+  .cta-content .action-btn {
+    background: white;
+    color: #8c5a03;
+    font-weight: 600;
+  }
+  
+  .cta-content .action-btn:hover {
+    background: #f8f8f8;
+    color: #8c5a03;
+  }
+  
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .hero-content,
+    .feature-card,
+    .testimonial-card {
+      background: #222;
+      border-color: #333;
+    }
+    
+    .testimonial-content {
+      background: linear-gradient(to right, #222, #2a2a2a);
+      border-color: #333;
+    }
+    
+    .main-heading {
+      color: #eee ;
+    }
+    
+    .tagline,
+    .feature-card p {
+      color: #aaa;
+    }
+    
+    .feature-card h3 {
+      color: #eee !important;
+    }
+    
+    .testimonial-content p {
+      color: #ddd;
+    }
+    
+    .action-btn-outline {
+      color: #e0a43b;
+      border-color: #e0a43b;
+    }
+    
+    .action-btn-outline:hover {
+      background: rgba(224, 164, 59, 0.2);
+      color: #e0a43b;
+    }
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .hero-buttons,
+    .testimonial-grid,
+    .feature-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .hero-buttons {
+      flex-direction: column;
+    }
+    
+    .main-heading {
+      font-size: 24px;
+    }
+    
+    .feature-card h3 {
+      font-size: 18px;
+    }
+    
+    .tagline {
+      font-size: 18px;
+    }
+  }
+</style>
 {% endblock %}
