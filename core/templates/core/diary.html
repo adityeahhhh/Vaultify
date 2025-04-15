@@ -1,0 +1,459 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<div class="diary-container">
+  <div class="diary-header">
+    <h2 class="main-heading">My Diary</h2>
+    <button class="new-entry-btn" onclick="openModal()">
+      <i class="fas fa-plus"></i> New Entry
+    </button>
+  </div>
+  
+  <div class="entries-grid">
+    {% for entry in entries %}
+      <div class="entry-card">
+        <div class="entry-header">
+          <div class="entry-meta">
+            <span class="date"><i class="far fa-calendar-alt"></i> {{ entry.created_at|date:"F d, Y H:i" }}</span>
+          </div>
+        </div>
+        
+        <div class="entry-content">
+          <p>{{ entry.content }}</p>
+        </div>
+        
+        <div class="entry-footer">
+          <button class="view-entry-btn" onclick="openEntryPopup({{ entry.id }})">
+            <i class="fas fa-eye"></i> View Full Entry
+          </button>
+        </div>
+      </div>
+
+      <!-- Popup for this entry -->
+      <div id="entryPopup{{ entry.id }}" class="entry-popup">
+        <div class="entry-popup-content">
+          <span class="close-popup" onclick="closeEntryPopup({{ entry.id }})">&times;</span>
+          
+          <div class="popup-header">
+            <div class="entry-meta">
+              <span class="date"><i class="far fa-calendar-alt"></i> {{ entry.created_at|date:"F d, Y H:i" }}</span>
+            </div>
+          </div>
+          
+          <div class="popup-content">
+            <p>{{ entry.content }}</p>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="no-entries">
+        <i class="far fa-edit empty-icon"></i>
+        <p>No diary entries yet. Add your first entry!</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- New Entry Modal -->
+<div id="entryModal" class="entry-popup">
+  <div class="entry-popup-content">
+    <span class="close-popup" onclick="closeModal()">&times;</span>
+    
+    <div class="popup-header">
+      <h3>New Diary Entry</h3>
+    </div>
+    
+    <form method="POST" action="">
+      {% csrf_token %}
+      <div class="form-group">
+        <textarea name="content" rows="6" placeholder="Write your diary entry here..." required></textarea>
+      </div>
+      <div class="form-footer">
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-save"></i> Save Entry
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  .diary-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .diary-header {
+    margin-bottom: 30px;
+    border-bottom: 2px solid #000000;
+    padding-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .diary-header h2 {
+    font-size: 28px;
+    color: #000000 !important;
+    margin: 0;
+    font-weight: 600;
+  }
+  
+  .entries-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+  }
+  
+  .entry-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    background: white;
+    border: 1px solid #eaeaea;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .entry-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  .entry-header {
+    padding: 18px 20px;
+    background: linear-gradient(to right, #f8f9fa, #f2f2f2);
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .entry-meta {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .entry-meta .date {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .entry-content {
+    padding: 20px;
+    flex-grow: 1;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    line-height: 1.6;
+  }
+  
+  .entry-footer {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .new-entry-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: #8c5a03;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  
+  .new-entry-btn:hover {
+    background: #b27204;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .view-entry-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: #8c5a03;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  
+  .view-entry-btn:hover {
+    background: #b27204;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Popup styles */
+  .entry-popup {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .entry-popup-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    max-width: 800px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .close-popup {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  
+  .close-popup:hover {
+    color: #333;
+  }
+  
+  .popup-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .popup-header h3 {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .popup-content {
+    margin-bottom: 20px;
+    line-height: 1.7;
+    color: #444;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    font-family: inherit;
+    background: #f9f9f9;
+    resize: vertical;
+  }
+  
+  textarea:focus {
+    outline: none;
+    border-color: #8c5a03;
+    box-shadow: 0 0 0 2px rgba(140, 90, 3, 0.1);
+  }
+  
+  .form-footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .submit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #8c5a03;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  
+  .submit-btn:hover {
+    background: #b27204;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .no-entries {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    color: #666;
+    border: 1px dashed #ccc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    grid-column: 1 / -1;
+  }
+  
+  .empty-icon {
+    font-size: 48px;
+    color: #ccc;
+  }
+  
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .entry-card {
+      background: #222;
+      border-color: #333;
+    }
+    
+    .entry-header {
+      background: linear-gradient(to right, #222, #2a2a2a);
+      border-color: #333;
+    }
+    
+    .entry-meta {
+      color: #aaa;
+    }
+    
+    .entry-content {
+      color: #ddd;
+    }
+    
+    .entry-popup-content {
+      background-color: #222;
+      color: #ddd;
+    }
+    
+    .popup-header {
+      border-color: #333;
+    }
+    
+    .popup-header h3 {
+      color: #eee;
+    }
+    
+    .popup-content {
+      color: #ddd;
+    }
+    
+    .close-popup {
+      color: #888;
+    }
+    
+    .close-popup:hover {
+      color: #ddd;
+    }
+    
+    textarea {
+      background: #333;
+      border-color: #444;
+      color: #ddd;
+    }
+    
+    .no-entries {
+      background: #222;
+      border-color: #444;
+      color: #aaa;
+    }
+    
+    .empty-icon {
+      color: #555;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .entries-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .diary-header h2 {
+      font-size: 24px;
+    }
+    
+    .entry-popup-content {
+      width: 95%;
+      margin: 10% auto;
+    }
+  }
+</style>
+
+<script>
+  function openModal() {
+    document.getElementById('entryModal').style.display = "block";
+    document.body.style.overflow = 'hidden';
+  }
+  
+  function closeModal() {
+    document.getElementById('entryModal').style.display = "none";
+    document.body.style.overflow = 'auto';
+  }
+  
+  function openEntryPopup(entryId) {
+    document.getElementById('entryPopup' + entryId).style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+  
+  function closeEntryPopup(entryId) {
+    document.getElementById('entryPopup' + entryId).style.display = 'none';
+    document.body.style.overflow = 'auto';
+  }
+  
+  // Close popup when clicking outside of the content
+  window.onclick = function(event) {
+    if (event.target == document.getElementById('entryModal')) {
+      closeModal();
+    }
+    
+    const popups = document.getElementsByClassName('entry-popup');
+    for (let i = 0; i < popups.length; i++) {
+      if (event.target == popups[i]) {
+        popups[i].style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+    }
+  }
+  
+  // Close popup with escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      const modal = document.getElementById('entryModal');
+      if (modal.style.display === 'block') {
+        closeModal();
+      }
+      
+      const popups = document.getElementsByClassName('entry-popup');
+      for (let i = 0; i < popups.length; i++) {
+        if (popups[i].style.display === 'block') {
+          popups[i].style.display = 'none';
+          document.body.style.overflow = 'auto';
+        }
+      }
+    }
+  });
+</script>
+{% endblock %}
