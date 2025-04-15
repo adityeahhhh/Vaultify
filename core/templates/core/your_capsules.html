@@ -7,7 +7,6 @@
 <div class="messages-container">
   <div class="messages-header">
     <h2>Your Capsules</h2>
-    <!-- Top Bar with Toggle Buttons -->
     <div class="toggle-buttons">
       <button id="show-unlocked" class="toggle-button active" onclick="toggleSections('unlocked')">Show Unlocked</button>
       <button id="show-locked" class="toggle-button" onclick="toggleSections('locked')">Show Locked</button>
@@ -31,19 +30,16 @@
                 </div>
               </div>
             </div>
-            
             <div class="message-footer">
-              <button class="view-message-btn" onclick="openMessagePopup('unlocked-{{ forloop.counter }}')">
+              <button class="view-message-btn" onclick="openMessagePopup('{{ msg.id }}')">
                 <i class="fas fa-eye"></i> View Capsule
               </button>
             </div>
           </div>
-          
           <!-- Popup for this unlocked message -->
-          <div id="messagePopup-unlocked-{{ forloop.counter }}" class="message-popup">
+          <div id="messagePopup-{{ msg.id }}" class="message-popup">
             <div class="message-popup-content">
-              <span class="close-popup" onclick="closeMessagePopup('unlocked-{{ forloop.counter }}')">&times;</span>
-              
+              <span class="close-popup" onclick="closeMessagePopup('{{ msg.id }}')">&times;</span>
               <div class="popup-header">
                 <h3>{{ msg.heading }}</h3>
                 <div class="message-meta">
@@ -57,45 +53,41 @@
                   <i class="fas fa-unlock-alt"></i> Unlocked
                 </div>
               </div>
-              
               <div class="popup-content">
                 <p>{{ msg.content }}</p>
               </div>
               {% if msg.latitude and msg.longitude %}
-            <div class="message-location">
-              <div id="map-{{ msg.id }}" class="message-map" style="height: 180px; border-radius: 8px; margin-bottom: 10px;"></div>
-              <script>
-                window.mapsToInit = window.mapsToInit || [];
-                window.mapsToInit.push({
-                  id: "map-{{ msg.id }}",
-                  lat: {{ msg.latitude }},
-                  lng: {{ msg.longitude }}
-                });
-              </script>
-              
-            </div>
-          {% endif %}
+                <div class="message-location">
+                  <div id="map-{{ msg.id }}" class="message-map" style="height: 180px; border-radius: 8px; margin-bottom: 10px;"></div>
+                  <script>
+                    window.mapsToInit = window.mapsToInit || [];
+                    window.mapsToInit.push({
+                      id: "map-{{ msg.id }}",
+                      lat: {{ msg.latitude }},
+                      lng: {{ msg.longitude }}
+                    });
+                  </script>
+                </div>
+              {% endif %}
               {% if msg.image %}
-              <div class="popup-media">
-                <img src="{{ msg.image.url }}" alt="Message Image" class="message-image">
-              </div>
+                <div class="popup-media">
+                  <img src="{{ msg.image.url }}" alt="Message Image" class="message-image">
+                </div>
               {% endif %}
-              
               {% if msg.video %}
-              <div class="popup-media">
-                <video controls class="message-video">
-                  <source src="{{ msg.video.url }}">
-                  Your browser does not support the video tag.
-                </video>
-              </div>
+                <div class="popup-media">
+                  <video controls class="message-video">
+                    <source src="{{ msg.video.url }}">
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
               {% endif %}
-              
               {% if msg.file %}
-              <div class="popup-attachment">
-                <a href="{{ msg.file.url }}" download class="download-button">
-                  <i class="fas fa-download"></i> Download Attachment
-                </a>
-              </div>
+                <div class="popup-attachment">
+                  <a href="{{ msg.file.url }}" download class="download-button">
+                    <i class="fas fa-download"></i> Download Attachment
+                  </a>
+                </div>
               {% endif %}
             </div>
           </div>
@@ -110,47 +102,44 @@
   </div>
 
   <!-- Locked Messages Section -->
-<div id="locked-section" style="display: none;">
-  <h3 class="section-title">Locked Messages</h3>
-  <div class="message-grid">
-    {% for msg in messages|dictsort:"unlock_datetime" %}
-      {% if msg.remaining > 0 %}
-        <div class="message-card">
-          <div class="message-header">
-            <h3>{{ msg.heading }}</h3>
-            <div class="message-meta">
-              <span class="author"><i class="fas fa-user"></i> {{ msg.user.username }}</span>
-              <div class="time-info">
-                <span class="date"><i class="far fa-calendar-plus"></i> Created: {{ msg.created_at|date:"Y-m-d H:i" }}</span>
-                <span class="date"><i class="far fa-calendar-alt"></i> Unlocks: {{ msg.unlock_datetime|date:"Y-m-d H:i" }}</span>
+  <div id="locked-section" style="display: none;">
+    <h3 class="section-title">Locked Messages</h3>
+    <div class="message-grid">
+      {% for msg in messages|dictsort:"unlock_datetime" %}
+        {% if msg.remaining > 0 %}
+          <div class="message-card">
+            <div class="message-header">
+              <h3>{{ msg.heading }}</h3>
+              <div class="message-meta">
+                <span class="author"><i class="fas fa-user"></i> {{ msg.user.username }}</span>
+                <div class="time-info">
+                  <span class="date"><i class="far fa-calendar-plus"></i> Created: {{ msg.created_at|date:"Y-m-d H:i" }}</span>
+                  <span class="date"><i class="far fa-calendar-alt"></i> Unlocks: {{ msg.unlock_datetime|date:"Y-m-d H:i" }}</span>
+                </div>
               </div>
             </div>
+            <div class="countdown-container">
+              <i class="fas fa-lock"></i>
+              <span id="countdown-{{ msg.id }}" class="countdown" data-unlock-time="{{ msg.unlock_datetime|date:'U' }}">
+                Calculating time remaining...
+              </span>
+            </div>
+            <div class="message-footer">
+              <button class="view-message-btn locked-btn" disabled>
+                <i class="fas fa-lock"></i> Locked
+              </button>
+            </div>
           </div>
-          
-          <div class="countdown-container">
-            <i class="fas fa-lock"></i>
-            <span id="countdown-{{ msg.id }}" class="countdown" 
-                  data-unlock-time="{{ msg.unlock_datetime|date:'U' }}">
-              Calculating time remaining...
-            </span>
-          </div>
-          
-          <div class="message-footer">
-            <button class="view-message-btn locked-btn" disabled>
-              <i class="fas fa-lock"></i> Locked
-            </button>
-          </div>
+        {% endif %}
+      {% empty %}
+        <div class="no-messages">
+          <i class="far fa-clock empty-icon"></i>
+          <p>No locked capsules available.</p>
         </div>
-      {% endif %}
-    {% empty %}
-      <div class="no-messages">
-        <i class="far fa-clock empty-icon"></i>
-        <p>No locked capsules available.</p>
-      </div>
-    {% endfor %}
+      {% endfor %}
+    </div>
   </div>
 </div>
-
 <style>
   .messages-container {
     max-width: 1200px;
@@ -532,15 +521,15 @@
     }
   }
 </style>
+<!-- CSS and scripts remain unchanged from your file, so not repeated here for brevity -->
 
 <script>
-  // Function to toggle between sections
+  // Toggle sections
   function toggleSections(section) {
     const unlockedSection = document.getElementById('unlocked-section');
     const lockedSection = document.getElementById('locked-section');
     const unlockedButton = document.getElementById('show-unlocked');
     const lockedButton = document.getElementById('show-locked');
-    
     if (section === 'unlocked') {
       unlockedSection.style.display = 'block';
       lockedSection.style.display = 'none';
@@ -553,21 +542,25 @@
       lockedButton.classList.add('active');
     }
   }
-  
-  // Function to open message popup
+
+  // Popup open/close
   function openMessagePopup(messageId) {
     document.getElementById('messagePopup-' + messageId).style.display = 'block';
-    // Prevent body scrolling when popup is open
     document.body.style.overflow = 'hidden';
+    setTimeout(function() {
+      var map = window.leafletMaps && window.leafletMaps['map-' + messageId];
+      if (map) {
+        map.invalidateSize();
+        var center = map.getCenter();
+        map.setView(center);
+      }
+    }, 200);
   }
-  
-  // Function to close message popup
   function closeMessagePopup(messageId) {
     document.getElementById('messagePopup-' + messageId).style.display = 'none';
-    // Re-enable body scrolling
     document.body.style.overflow = 'auto';
   }
-  
+
   // Close popup when clicking outside of the content
   window.onclick = function(event) {
     const popups = document.getElementsByClassName('message-popup');
@@ -578,7 +571,7 @@
       }
     }
   }
-  
+
   // Close popup with escape key
   document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
@@ -591,27 +584,20 @@
       }
     }
   });
-  
-   // display countdown
-   document.addEventListener('DOMContentLoaded', function() {
-    // Get all countdown elements
+
+  // Countdown logic (unchanged)
+  document.addEventListener('DOMContentLoaded', function() {
     const countdownElements = document.querySelectorAll('.countdown');
-    
-    // Update all countdowns
     function updateCountdowns() {
-      const now = Math.floor(Date.now() / 1000); // Current time in seconds
-      
+      const now = Math.floor(Date.now() / 1000);
       countdownElements.forEach(el => {
         const unlockTime = parseInt(el.getAttribute('data-unlock-time'));
         const remaining = unlockTime - now;
-        
         if (remaining > 0) {
           el.textContent = "Unlocks in: " + formatTime(remaining);
         } else {
           el.textContent = "Unlocked!";
           el.parentElement.querySelector('i').className = "fas fa-unlock";
-          
-          // Enable the button when unlocked
           const parentCard = el.closest('.message-card');
           if (parentCard) {
             const button = parentCard.querySelector('.view-message-btn');
@@ -619,17 +605,13 @@
               button.disabled = false;
               button.classList.remove('locked-btn');
               button.innerHTML = '<i class="fas fa-eye"></i> View Capsule';
-              
-              // Get the message ID from the countdown ID
               const msgId = el.id.replace('countdown-', '');
-              button.setAttribute('onclick', `openMessagePopup('locked-${msgId}')`);
+              button.setAttribute('onclick', `openMessagePopup('${msgId}')`);
             }
           }
         }
       });
     }
-    
-    // Format seconds into days, hours, minutes, seconds
     function formatTime(seconds) {
       const d = Math.floor(seconds / (3600 * 24));
       seconds %= 3600 * 24;
@@ -637,22 +619,19 @@
       seconds %= 3600;
       const m = Math.floor(seconds / 60);
       const s = Math.floor(seconds % 60);
-      
       let result = '';
       if (d > 0) result += `${d}d `;
       if (d > 0 || h > 0) result += `${h}h `;
       if (d > 0 || h > 0 || m > 0) result += `${m}m `;
       result += `${s}s`;
-      
       return result;
     }
-    
-    // Update countdowns immediately and then every second
     updateCountdowns();
     setInterval(updateCountdowns, 1000);
   });
-</script>
-<script>
+
+  // Leaflet map initialization
+  window.leafletMaps = window.leafletMaps || {};
   document.addEventListener("DOMContentLoaded", function() {
     if (window.mapsToInit) {
       window.mapsToInit.forEach(function(mapData) {
@@ -662,8 +641,10 @@
           attribution: '© OpenStreetMap'
         }).addTo(map);
         L.marker([mapData.lat, mapData.lng]).addTo(map);
+        window.leafletMaps[mapData.id] = map;
       });
     }
   });
 </script>
 {% endblock %}
+

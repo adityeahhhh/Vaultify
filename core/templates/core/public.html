@@ -1,4 +1,4 @@
-{% extends 'core/base.html' %} 
+{% extends 'core/base.html' %}
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <div class="messages-container">
@@ -22,16 +22,16 @@
           </div>
           
           <div class="message-footer">
-            <button class="view-message-btn" onclick="openMessagePopup({{ msg.id }})">
+            <button class="view-message-btn" onclick="openMessagePopup('{{ msg.id }}')">
               <i class="fas fa-eye"></i> View Message
             </button>
           </div>
         </div>
 
         <!-- Popup for this message -->
-        <div id="messagePopup{{ msg.id }}" class="message-popup">
+        <div id="messagePopup-{{ msg.id }}" class="message-popup">
           <div class="message-popup-content">
-            <span class="close-popup" onclick="closeMessagePopup({{ msg.id }})">&times;</span>
+            <span class="close-popup" onclick="closeMessagePopup('{{ msg.id }}')">&times;</span>
             
             <div class="popup-header">
               <h3>{{ msg.heading }}</h3>
@@ -49,7 +49,7 @@
             </div>
             {% if msg.latitude and msg.longitude %}
             <div class="message-location">
-              <div id="map-{{ msg.id }}" class="message-map" style="height: 180px; border-radius: 8px; margin-bottom: 10px;"></div>
+              <div id="map-{{ msg.id }}" class="message-map"></div>
               <script>
                 window.mapsToInit = window.mapsToInit || [];
                 window.mapsToInit.push({
@@ -58,9 +58,8 @@
                   lng: {{ msg.longitude }}
                 });
               </script>
-              
             </div>
-          {% endif %}
+            {% endif %}
             
             {% if msg.image %}
             <div class="popup-media">
@@ -153,14 +152,13 @@
   }
   
   .message-map {
-  width: 300px;           /* or any fixed width you want */
-  height: 120px;          /* reduce height as needed */
-  border-radius: 8px;
-  margin: 0 auto 30px;    /* top: 0, right/left: auto, bottom: 10px */
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  display: block;         /* ensures margin auto works */
-}
-
+    width: 300px;
+    height: 180px;
+    border-radius: 8px;
+    margin: 0 auto 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: block;
+  }
   .message-meta {
     display: flex;
     justify-content: space-between;
@@ -408,15 +406,24 @@
 </style>
 
 <script>
+  // Store map instances globally
+  window.leafletMaps = window.leafletMaps || {};
+
   function openMessagePopup(messageId) {
-    document.getElementById('messagePopup' + messageId).style.display = 'block';
-    // Prevent body scrolling when popup is open
+    document.getElementById('messagePopup-' + messageId).style.display = 'block';
     document.body.style.overflow = 'hidden';
+    setTimeout(function() {
+      var map = window.leafletMaps && window.leafletMaps['map-' + messageId];
+      if (map) {
+        map.invalidateSize();
+        var center = map.getCenter();
+        map.setView(center);
+      }
+    }, 200);
   }
   
   function closeMessagePopup(messageId) {
-    document.getElementById('messagePopup' + messageId).style.display = 'none';
-    // Re-enable body scrolling
+    document.getElementById('messagePopup-' + messageId).style.display = 'none';
     document.body.style.overflow = 'auto';
   }
   
@@ -443,8 +450,8 @@
       }
     }
   });
-</script>
-<script>
+
+  // Initialize all maps and store instances
   document.addEventListener("DOMContentLoaded", function() {
     if (window.mapsToInit) {
       window.mapsToInit.forEach(function(mapData) {
@@ -454,6 +461,7 @@
           attribution: '© OpenStreetMap'
         }).addTo(map);
         L.marker([mapData.lat, mapData.lng]).addTo(map);
+        window.leafletMaps[mapData.id] = map;
       });
     }
   });

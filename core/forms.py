@@ -15,8 +15,8 @@ class CapsuleForm(forms.ModelForm):
         widgets = {
             'unlock_datetime': DateTimeInput(attrs={'type': 'datetime-local'}),
             # Optionally, you can hide these fields if you use a map picker in your template
-            'latitude': forms.HiddenInput(),
-            'longitude': forms.HiddenInput(),
+            #'latitude': forms.HiddenInput(),
+            #'longitude': forms.HiddenInput(),
         }
 
 
