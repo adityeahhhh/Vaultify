@@ -14,5 +14,5 @@ urlpatterns = [
     path('your_capsules/', views.your_capsules, name='your_capsules'),
     path('profile/', views.profile, name='profile'),
     path('public_map/', views.public_map, name='public_map'),
-
+    path('diary/', views.diary, name='diary'),
 ]
