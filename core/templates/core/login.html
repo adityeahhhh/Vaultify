@@ -1,0 +1,100 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+    <div class="form-container">
+        <div class="form-header">
+            <h2>Login</h2>
+        </div>
+
+        <div class="form-card">
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="login-button">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .form-header {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-header h2 {
+            font-size: 28px;
+            color: #000000 !important;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .form-card {
+            border-radius: 12px;
+            background: linear-gradient(to right, #222, #2a2a2a);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            color: #f8f8f8;
+            border: 1px solid #444;
+            padding: 30px;
+        }
+
+        form p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px 3px;
+            margin-top: 5px;
+            border: 1px solid #555;
+            border-radius: 8px;
+            background-color: #333;
+            color: #f8f8f8;
+        }
+
+        .login-button {
+            background-color: #d48f17;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .login-button:hover {
+            background-color: #c07f12;
+        }
+
+        @media (max-width: 768px) {
+            .form-card {
+                padding: 20px;
+            }
+
+            .form-header h2 {
+                font-size: 24px;
+            }
+
+            form p {
+                font-size: 16px;
+            }
+
+            .login-button {
+                width: 100%;
+            }
+        }
+    </style>
+{% endblock %}

@@ -1,0 +1,404 @@
+{% extends 'core/base.html' %} 
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<div class="messages-container">
+  <div class="messages-header">
+    <h2 class="main-heading">Messages</h2>
+  </div>
+  
+  {% if messages %}
+    <div class="message-grid">
+      {% for msg in messages %}
+        <div class="message-card">
+          <div class="message-header">
+            <h3>{{ msg.heading }}</h3>
+            <div class="message-meta">
+              <span class="author"><i class="fas fa-user"></i> {{ msg.user.username }}</span>
+              <span class="date"><i class="far fa-calendar-alt"></i> {{ msg.unlock_datetime|date:"Y-m-d H:i" }}</span>
+            </div>
+          </div>
+          
+          <div class="message-footer">
+            <button class="view-message-btn" onclick="openMessagePopup({{ msg.id }})">
+              <i class="fas fa-eye"></i> View Message
+            </button>
+          </div>
+        </div>
+
+        <!-- Popup for this message -->
+        <div id="messagePopup{{ msg.id }}" class="message-popup">
+          <div class="message-popup-content">
+            <span class="close-popup" onclick="closeMessagePopup({{ msg.id }})">&times;</span>
+            
+            <div class="popup-header">
+              <h3>{{ msg.heading }}</h3>
+              <div class="message-meta">
+                <span class="author"><i class="fas fa-user"></i> {{ msg.user.username }}</span>
+                <span class="date"><i class="far fa-calendar-alt"></i> {{ msg.unlock_datetime|date:"Y-m-d H:i" }}</span>
+              </div>
+            </div>
+            
+            <div class="popup-content">
+              <p>{{ msg.content }}</p>
+            </div>
+            
+            {% if msg.image %}
+            <div class="popup-media">
+              <img src="{{msg.image.url}}" alt="Message Image" class="message-image">
+            </div>
+            {% endif %}
+            
+            {% if msg.video %}
+            <div class="popup-media">
+              <video controls class="message-video">
+                <source src="{{msg.video.url}}">
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            {% endif %}
+            
+            {% if msg.file %}
+            <div class="popup-attachment">
+              <a href="{{ msg.file.url }}" download class="download-button">
+                <i class="fas fa-download"></i> Download Attachment
+              </a>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="no-messages">
+      <i class="far fa-comment-alt empty-icon"></i>
+      <p>No public messages available yet. Check back later!</p>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+  .messages-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .messages-header {
+    margin-bottom: 30px;
+    border-bottom: 2px solid #000000;
+    padding-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .messages-header h2 {
+    font-size: 28px;
+    color: #000000 !important;
+    margin: 0;
+    font-weight: 600;
+  }
+  
+  .message-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+  }
+  
+  .message-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    background: white;
+    border: 1px solid #eaeaea;
+  }
+  
+  .message-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  .message-header {
+    padding: 18px 20px;
+    background: linear-gradient(to right, #f8f9fa, #f2f2f2);
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .message-header h3 {
+    margin: 0 0 10px 0;
+    font-size: 20px;
+    color: #333 !important;
+    font-weight: 600;
+  }
+  
+  .message-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .message-meta .author, 
+  .message-meta .date {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .message-footer {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .view-message-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: #8c5a03;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  
+  .view-message-btn:hover {
+    background: #b27204;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Popup styles */
+  .message-popup {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .message-popup-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    max-width: 800px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .close-popup {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  
+  .close-popup:hover {
+    color: #333;
+  }
+  
+  .popup-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .popup-header h3 {
+    margin: 0 0 10px 0;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .popup-content {
+    margin-bottom: 20px;
+    line-height: 1.7;
+    color: #444;
+  }
+  
+  .popup-media {
+    margin-bottom: 20px;
+  }
+  
+  .popup-media img,
+  .popup-media video {
+    max-width: 100%;
+    border-radius: 8px;
+    display: block;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .popup-attachment {
+    margin-top: 15px;
+  }
+  
+  .download-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: #8c5a03;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  
+  .download-button:hover {
+    background: #575757;
+    text-decoration: none;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(32, 26, 6, 0.25);
+  }
+  
+  .no-messages {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    color: #666;
+    border: 1px dashed #ccc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .empty-icon {
+    font-size: 48px;
+    color: #ccc;
+  }
+  
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .message-card {
+      background: #222;
+      border-color: #333;
+    }
+    
+    .message-header {
+      background: linear-gradient(to right, #222, #2a2a2a);
+      border-color: #333;
+    }
+    
+    .message-header h3 {
+      color: #eee !important;
+    }
+    
+    .message-meta {
+      color: #aaa;
+    }
+    
+    .message-popup-content {
+      background-color: #222;
+      color: #ddd;
+    }
+    
+    .popup-header {
+      border-color: #333;
+    }
+    
+    .popup-header h3 {
+      color: #eee;
+    }
+    
+    .popup-content {
+      color: #ddd;
+    }
+    
+    .close-popup {
+      color: #888;
+    }
+    
+    .close-popup:hover {
+      color: #ddd;
+    }
+    
+    .no-messages {
+      background: #222;
+      border-color: #444;
+      color: #aaa;
+    }
+    
+    .empty-icon {
+      color: #555;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .message-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .messages-header h2 {
+      font-size: 24px;
+    }
+    
+    .message-header h3 {
+      font-size: 18px;
+    }
+    
+    .message-popup-content {
+      width: 95%;
+      margin: 10% auto;
+    }
+  }
+</style>
+
+<script>
+  function openMessagePopup(messageId) {
+    document.getElementById('messagePopup' + messageId).style.display = 'block';
+    // Prevent body scrolling when popup is open
+    document.body.style.overflow = 'hidden';
+  }
+  
+  function closeMessagePopup(messageId) {
+    document.getElementById('messagePopup' + messageId).style.display = 'none';
+    // Re-enable body scrolling
+    document.body.style.overflow = 'auto';
+  }
+  
+  // Close popup when clicking outside of the content
+  window.onclick = function(event) {
+    const popups = document.getElementsByClassName('message-popup');
+    for (let i = 0; i < popups.length; i++) {
+      if (event.target == popups[i]) {
+        popups[i].style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+    }
+  }
+  
+  // Close popup with escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      const popups = document.getElementsByClassName('message-popup');
+      for (let i = 0; i < popups.length; i++) {
+        if (popups[i].style.display === 'block') {
+          popups[i].style.display = 'none';
+          document.body.style.overflow = 'auto';
+        }
+      }
+    }
+  });
+</script>
+{% endblock %}
